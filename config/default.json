@@ -1,0 +1,24 @@
+{
+  // Bot configuration
+  "bot": {
+      "token":"NDUyMjE0NTg0NTkwMzM2MDIw.Dffg1A.Af0PSXdcBT9YN6DlppcDumy9S1w",
+      "prefix": "!",
+      "debug": true
+  },
+  "boxyd": {
+      "port": 3335,
+      "user": "freshbatchboyz420",
+      "pass": "Bitchbett3rh4vm7m0ney1337poop"
+  },
+  "moderation":{
+  "pm2Name": "TipBot",
+   // Roles that have access to all commands.
+  "perms": ["Admin","Moderator","Community Leader","Bots"],
+  // Bot Devs!
+  "botDev": "Bot Developer",
+  // Channel to log the bots moderation..
+  "logchannel": "429853685179351050",
+  //channel that the tip message will reply in if Multi or Role tip is used.
+  "botspamchannels": ["429134627823812612", "429852470886268929"]
+  }
+}
