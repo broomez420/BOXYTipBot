@@ -1,19 +1,24 @@
 {
   // Bot configuration
   "bot": {
-      "token":"NDUyMjE0NTg0NTkwMzM2MDIw.Dffg1A.Af0PSXdcBT9YN6DlppcDumy9S1w",
+    // Token is taken from discordapi bot settings
+      "token":"DISCORD_BOT_TOKEN",
       "prefix": "!",
       "debug": true
   },
+    // RPC connects the discord bot to the wallet
+    // boxyd is the identifier used by the Plugins module
+    // Compile your boxy wallet ./boxyd using the Ubuntu VPS 16.04 installation documentation
+    // When compiled update the boxy.config file in ~/.boxy/
   "boxyd": {
       "port": 3335,
-      "user": "freshbatchboyz420",
-      "pass": "Bitchbett3rh4vm7m0ney1337poop"
+      "user": "RPC_USER_NAME",
+      "pass": "RPC_PASSWORD"
   },
   "moderation":{
   "pm2Name": "TipBot",
    // Roles that have access to all commands.
-  "perms": ["Admin","Moderator","Community Leader","Bots"],
+  "perms": ["Dev Team","etc","etcc","etccc"],
   // Bot Devs!
   "botDev": "Bot Developer",
   // Channel to log the bots moderation..
