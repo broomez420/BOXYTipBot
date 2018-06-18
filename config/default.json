@@ -1,29 +1,25 @@
+
 {
   // Bot configuration
   "bot": {
-    // Token is taken from discordapi bot settings
-      "token":"DISCORD_BOT_TOKEN",
+      "token":"<DISCORDBOTTOKEN",
       "prefix": "!",
       "debug": true
   },
-    // RPC connects the discord bot to the wallet
-    // boxyd is the identifier used by the Plugins module
-    // Compile your boxy wallet ./boxyd using the Ubuntu VPS 16.04 installation documentation
-    // When compiled update the boxy.config file in ~/.boxy/
   "boxyd": {
       "port": 3335,
-      "user": "RPC_USER_NAME",
-      "pass": "RPC_PASSWORD"
+      "user": "<RPCUSERNAME>",
+      "pass": "<RPCPASSWORD>"
   },
   "moderation":{
   "pm2Name": "TipBot",
    // Roles that have access to all commands.
-  "perms": ["Dev Team","etc","etcc","etccc"],
+  "perms": ["Dev Team","Community Manager","BOXY Tip Bot"],
   // Bot Devs!
-  "botDev": "Bot Developer",
+  "botDev": "Dev Team",
   // Channel to log the bots moderation..
-  "logchannel": "429853685179351050",
+  "logchannel": "453483319242260481",
   //channel that the tip message will reply in if Multi or Role tip is used.
-  "botspamchannels": ["429134627823812612", "429852470886268929"]
+  "botspamchannels": ["453609477531238410", "453609960266399745"]
   }
 }
