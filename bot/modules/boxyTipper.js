@@ -8,7 +8,6 @@ example:
 4. BOXY        = ETH
 */
 
-
 'use strict';
 
 const bitcoin = require('bitcoin'); //leave as const bitcoin = require('bitcoin');
@@ -23,7 +22,7 @@ exports.commands = ['tipboxy'];
 exports.tipboxy = {
   usage: '<subcommand>',
   description:
-    '**!tipboxy** : Displays This Message\n    **!tipboxy balance** : get your balance\n    **!tipboxy deposit** : get address for your deposits\n    **!tipboxy withdraw <ADDRESS> <AMOUNT>** : withdraw coins to specified address\n    **!tipboxy <@user> <amount>** :mention a user with @ and then the amount to tip them\n    **!tipboxy private <user> <amount>** : put private before Mentioning a user to tip them privately.',
+    '**!tipboxy** : Displays This Message\n    **!tipboxy balance** : get your balance\n    **!t$
   process: async function(bot, msg, suffix) {
     let tipper = msg.author.id.replace('!', ''),
       words = msg.content
@@ -34,7 +33,7 @@ exports.tipboxy = {
         }),
       subcommand = words.length >= 2 ? words[1] : 'help',
       helpmsg =
-        '**!tipboxy** : Displays This Message\n    **!tipboxy balance** : get your balance\n    **!tipboxy deposit** : get address for your deposits\n    **!tipboxy withdraw <ADDRESS> <AMOUNT>** : withdraw coins to specified address\n    **!tipboxy <@user> <amount>** :mention a user with @ and then the amount to tip them\n    **!tipboxy private <user> <amount>** : put private before Mentioning a user to tip them privately.\n    **<> : Replace with appropriate value.**',
+        '**!tipboxy** : Displays This Message\n    **!tipboxy balance** : get your balance\n    $
       channelwarning = 'Please use <#bot-spam> or DMs to talk to bots.';
     switch (subcommand) {
       case 'help':
@@ -234,7 +233,6 @@ function getValidatedAmount(amount) {
 }
 
 function txLink(txId) {
-  return 'http://Explorer-Url/tx/' + txId;
+  return 'https://boxy.blockxplorer.info/tx/' + txId;
 }
-
 
