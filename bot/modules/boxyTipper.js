@@ -8,7 +8,7 @@ example:
 4. BOXY        = ETH
 */
 
-/*
+
 'use strict';
 
 const bitcoin = require('bitcoin'); //leave as const bitcoin = require('bitcoin');
@@ -237,4 +237,4 @@ function txLink(txId) {
   return 'http://Explorer-Url/tx/' + txId;
 }
 
-*/
+
