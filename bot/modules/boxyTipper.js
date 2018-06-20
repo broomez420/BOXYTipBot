@@ -105,7 +105,7 @@ function doWithdraw(message, tipper, words, helpmsg) {
     return;
   }
 
-  boxy.sendFrom(tipper, address, Number(amount), function(err, txId) {
+  boxy.sendFrom(tipper, address, Number(amount-0.00001), function(err, txId) {
     if (err) {
       message.reply(err.message).then(message => message.delete(10000));
     } else {
