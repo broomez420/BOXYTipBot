@@ -15,27 +15,9 @@ const Discord = require('discord.js');
 let bot = new Discord.Client();
 
 let Regex = require('regex'),
-  config = {
-    "bot": {
-        "token":"NDU4NDMyODYzNzkzMDUzNzA2.DgnlkQ.IxD1Qt0uJJrJb5Do1WdBnVPf44c",
-        "prefix": "!",
-        "debug": true
-    },
-    "boxyd": {
-        "port": 3335,
-        "user": "boxytestbotmadhu",
-        "pass": "boxyt2stb000tth8sisj4staT5st"
-    },
-    "moderation":{
-        "pm2Name": "TipBot",
-        "perms": ["Wax Maker","Bots"],
-        "botDev": "Wax Maker",
-        "logchannel": "458433551474491403",
-        "botspamchannels": ["458433610001940480", "458433633519271957"]
-    }
-},
-  spamchannels = config.moderation.botspamchannels;
-let walletConfig = config.boxyd;
+  config = require('config'),
+  spamchannels = config.get('moderation').botspamchannels;
+let walletConfig = config.get('boxyd');
 const boxy = new bitcoin.Client(walletConfig); //leave as = new bitcoin.Client(walletConfig)
 
 exports.commands = ['tipboxy'];
