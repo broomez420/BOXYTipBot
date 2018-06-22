@@ -15,9 +15,27 @@ const Discord = require('discord.js');
 let bot = new Discord.Client();
 
 let Regex = require('regex'),
-  config = require('config'),
-  spamchannels = config.get('moderation').botspamchannels;
-let walletConfig = config.get('boxyd');
+  config = {
+    "bot": {
+        "token":"NDU4NDMyODYzNzkzMDUzNzA2.DgnlkQ.IxD1Qt0uJJrJb5Do1WdBnVPf44c",
+        "prefix": "!",
+        "debug": true
+    },
+    "boxyd": {
+        "port": 3335,
+        "user": "boxytestbotmadhu",
+        "pass": "boxyt2stb000tth8sisj4staT5st"
+    },
+    "moderation":{
+        "pm2Name": "TipBot",
+        "perms": ["Wax Maker","Bots"],
+        "botDev": "Wax Maker",
+        "logchannel": "458433551474491403",
+        "botspamchannels": ["458433610001940480", "458433633519271957"]
+    }
+},
+  spamchannels = config.moderation.botspamchannels;
+let walletConfig = config.boxyd;
 const boxy = new bitcoin.Client(walletConfig); //leave as = new bitcoin.Client(walletConfig)
 
 exports.commands = ['tipboxy'];
@@ -50,8 +68,14 @@ exports.tipboxy = {
       case 'withdraw':
         privateorSpamChannel(msg, channelwarning, doWithdraw, [tipper, words, helpmsg]);
         break;
+      case 'soak':
+        doSoakRainDrizzle(bot, msg, tipper, words, helpmsg, "soak");
+        break;
       case 'rain':
-        doRain(bot, msg, tipper, words, helpmsg);
+        doSoakRainDrizzle(bot, msg, tipper, words, helpmsg, "rain");
+        break;
+      case 'drizzle':
+        doSoakRainDrizzle(bot, msg, tipper, words, helpmsg, "drizzle");
         break;
       default:
         doTip(bot, msg, tipper, words, helpmsg);
@@ -76,7 +100,7 @@ function doBalance(message, tipper) {
     if (err) {
       message.reply('Error getting Boxy balance.').then(message => message.delete(10000));
     } else {
-      message.reply('You have *' + balance + '* BOXY');
+      message.reply('You have **' + balance + ' BOXY** :moneybag:');
     }
   });
 }
@@ -145,7 +169,7 @@ function doTip(bot, message, tipper, words, helpmsg) {
   }
 }
 
-function doRain(bot, message, tipper, words, helpmsg) {
+function doSoakRainDrizzle(bot, message, tipper, words, helpmsg, tipType) {
   if (words.length < 3 || !words) {
       doHelp(message, helpmsg);
       return;
@@ -171,12 +195,21 @@ function doRain(bot, message, tipper, words, helpmsg) {
     if(amount < balance){
       let members = bot.users;
       let online = members.filter(m => m.presence.status === 'online' && m.bot === false && tipper !== m.id);
-      let onlineID = online.map(function (user) {
-        return user.id;
-      });
-      let shareAmount = amount/onlineID.length;
-      if(!onlineID.length){
-          message.reply(onlineID.length + " users currently online. No BOXY is rained");
+
+      if(tipType === "soak") {
+        soak(amount, online, onlineUserResponse);
+      } else if(tipType === "rain"){
+        rain(amount, online, message, onlineUserResponse);
+      } else if (tipType === "drizzle"){
+        drizzle(amount, online, message, onlineUserResponse);
+      }
+    } else {
+      message.reply("Account has insufficient funds").then(message => message.delete(10000));
+    }
+    function onlineUserResponse(onlineID, noUserMessage, tippedMessage){
+        let shareAmount = amount/onlineID.length;
+        if(!onlineID.length){
+        message.reply(noUserMessage);
       } else {
         onlineID.forEach(function(id){
           getAddress(id, function(err, address) {
@@ -190,12 +223,76 @@ function doRain(bot, message, tipper, words, helpmsg) {
             }
           })
         });
-        message.reply(onlineID.length + " users currently online you sent " + shareAmount + " BOXY to each");
+        message.channel.send(tippedMessage)
       }
-    } else {
-      message.reply("Account has insufficient funds").then(message => message.delete(10000));
     }
   });
+}
+
+
+
+function soak(amount, online, callback){
+  let onlineID = online.map(function (user) {
+      return user.id;
+  });
+  callback(onlineID, onlineID.length + " users currently online. No BOXY is rained",
+      "@everyone :thunder_cloud_rain: BOXY Coins are falling from the sky!!! :thunder_cloud_rain: \n**" +
+      amount/onlineID.length + " BOXY** soaked " + onlineID.length + " Online Users! :rocket:");
+}
+
+function rain(amount, online, message, callback){
+  // users online && msg in last 10 minutes - limit to 5 users
+  let onlineID = [];
+  let onlineUsername = "";
+  let currentTime = new Date().getTime();
+  online.forEach(function (user) {
+    if (!user.lastMessage) {
+      const collector = new Discord.MessageCollector(message.channel, m => m.author.id === user.id, { time: 10000 });
+      collector.on('collect', message => {
+        if(currentTime - message.createdTimestamp < 180000) {
+          onlineID.push(user.id);
+          onlineUsername = onlineUsername + " <@" + user.id + ">"
+        }
+        collector.stop("Got my message");
+      })
+    } else {
+      if(currentTime - message.createdTimestamp < 180000) {
+        onlineID.push(user.id);
+        onlineUsername = onlineUsername + " <@" + user.id + ">"
+      }
+    }
+  });
+  callback(onlineID, "No new messages, since I woke up", ":cloud_rain: **" + amount/onlineID.length + " BOXY** rained down on " + onlineUsername + " :rocket:");
+}
+
+function drizzle(amount, online, message, callback){
+  // users online && msg in last 10 minutes - limit to 5 users
+  let onlineUsersList = [];
+  let onlineUsername = "";
+  let currentTime = new Date().getTime();
+  online.forEach(function (user) {
+    if (!user.lastMessage) {
+      const collector = new Discord.MessageCollector(message.channel, m => m.author.id === user.id, { time: 10000 });
+      collector.on('collect', message => {
+        if(currentTime - message.createdTimestamp < 60000) {
+          onlineUsersList.push({id: user.id, timestamp: message.createdTimestamp});
+        }
+        collector.stop("Got my message");
+      })
+    } else {
+      if(currentTime - message.createdTimestamp < 60000) {
+        onlineUsersList.push({id: user.id, timestamp: user.lastMessage.createdTimestamp});
+      }
+    }
+  });
+  let sortedOnlineUsersList = onlineUsersList.sort(compareDesc);
+  let top5 = sortedOnlineUsersList.slice(0, 5);
+
+  let onlineID = top5.map(function (user) {
+    onlineUsername = onlineUsername + " <@" + user.id + ">";
+    return user.id;
+  });
+  callback(onlineID,"No new messages, since I woke up", ":white_sun_rain_cloud: **" + amount/onlineID.length + " BOXY** rained down on " + onlineUsername + " :rocket:");
 }
 
 function sendBOXY(bot, message, tipper, recipient, amount, privacyFlag) {
@@ -281,6 +378,13 @@ function isSpam(msg) {
   return spamchannels.includes(msg.channel.id);
 };
 
+function compareDesc(a,b) {
+    if (a.timestamp < b.timestamp)
+        return 1;
+    if (a.timestamp > b.timestamp)
+        return -1;
+    return 0;
+}
 
 function getValidatedAmount(amount) {
   amount = amount.trim();
