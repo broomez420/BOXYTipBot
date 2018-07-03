@@ -175,30 +175,32 @@ function checkMessageForCommand(msg, isEdit) {
     } else {
       var cmd = commands[cmdTxt];
     }
-    if (cmd) {
-      // Add permission check here later on ;)
-      console.log(
-        'treating ' +
-          msg.content +
-          ' from ' +
-          msg.author.username +
-          ' as command'
-      );
-      try {
-        cmd.process(bot, msg, suffix, isEdit);
-      } catch (e) {
-        var msgTxt = 'command ' + cmdTxt + ' failed :(';
-        var linebreak = '\n-------------------------------------------------\n';
-        if (config.debug) {
-          msgTxt += '\n' + e.stack;
-        }
-        var time = moment()
-          .tz('America/Los_Angeles')
-          .format('MM-DD-YYYY hh:mm a');
-        bot.channels
-          .get(logChannel)
-          .send('[' + time + ' PST][' + pm2Name + '] ' + msgTxt + linebreak);
+    if (!cmd) {
+      cmd = commands["directCommands"]
+    }
+
+    // Add permission check here later on ;)
+    console.log(
+      'treating ' +
+        msg.content +
+        ' from ' +
+        msg.author.username +
+        ' as command'
+    );
+    try {
+      cmd.process(bot, msg, suffix, isEdit);
+    } catch (e) {
+      var msgTxt = 'command ' + cmdTxt + ' failed :(';
+      var linebreak = '\n-------------------------------------------------\n';
+      if (config.debug) {
+        msgTxt += '\n' + e.stack;
       }
+      var time = moment()
+        .tz('America/Los_Angeles')
+        .format('MM-DD-YYYY hh:mm a');
+      bot.channels
+        .get(logChannel)
+        .send('[' + time + ' PST][' + pm2Name + '] ' + msgTxt + linebreak);
     }
   } else {
     //message isn't a command or is from us
