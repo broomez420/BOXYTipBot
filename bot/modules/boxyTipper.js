@@ -20,7 +20,7 @@ let Regex = require('regex'),
 let walletConfig = config.get('boxyd');
 const boxy = new bitcoin.Client(walletConfig); //leave as = new bitcoin.Client(walletConfig)
 
-exports.commands = ['tipboxy'];
+exports.commands = ['directCommands', 'tipboxy'];
 exports.tipboxy = {
   usage: '<subcommand>',
   description:
@@ -65,6 +65,52 @@ exports.tipboxy = {
   }
 };
 
+exports.directCommands = {
+  usage: '<subcommand>',
+  description:
+    '**!tipboxy** : Displays This Message\n    **!tipboxy balance** : get your balance\n    **!tipboxy deposit** : get address for your deposits\n    **!tipboxy withdraw <ADDRESS> <AMOUNT>** : withdraw coins to specified address\n    **!tipboxy <@user> <amount>** :mention a user with @ and then the amount to tip them\n    **!tipboxy private <user> <amount>** : put private before Mentioning a user to tip them privately.',
+  process: async function(bot, msg, suffix) {
+    let tipper = msg.author.id.replace('$', ''),
+    words = msg.content
+      .replace('$', '')
+      .trim()
+      .split(' ')
+      .filter(function(n) {
+        return n !== '';
+      }),
+    subcommand = words.length >= 1 ? words[0] : 'help',
+    cmdOffset = "-1",
+    helpmsg =
+      '**!tipboxy** : Displays This Message\n    **!tipboxy balance** : get your balance\n    **!tipboxy deposit** : get address for your deposits\n    **!tipboxy withdraw <ADDRESS> <AMOUNT>** : withdraw coins to specified address\n    **!tipboxy <@user> <amount>** :mention a user with @ and then the amount to tip them\n    **!tipboxy private <user> <amount>** : put private before Mentioning a user to tip them privately.\n    **<> : Replace with appropriate value.**',
+    channelwarning = 'Please use <#bot-spam> or DMs to talk to bots.';
+    switch (subcommand) {
+      case 'help':
+        privateorSpamChannel(msg, channelwarning, doHelp, [helpmsg]);
+        break;
+      case 'bal':
+        doBalance(msg, tipper);
+        break;
+      case 'deposit':
+        privateorSpamChannel(msg, channelwarning, doDeposit, [tipper]);
+        break;
+      case 'withdraw':
+        privateorSpamChannel(msg, channelwarning, doWithdraw, [tipper, words, helpmsg, cmdOffset]);
+        break;
+      case 'soak':
+        doSoakRainDrizzle(bot, msg, tipper, words, helpmsg, "soak", cmdOffset);
+        break;
+      case 'rain':
+        doSoakRainDrizzle(bot, msg, tipper, words, helpmsg, "rain", cmdOffset);
+        break;
+      case 'drizzle':
+        doSoakRainDrizzle(bot, msg, tipper, words, helpmsg, "drizzle", cmdOffset);
+        break;
+      default:
+        doTip(bot, msg, tipper, words, helpmsg, cmdOffset);
+    }
+  }
+};
+
 function privateorSpamChannel(message, wrongchannelmsg, fn, args) {
   if (!inPrivateorSpamChannel(message)) {
     message.reply(wrongchannelmsg);
@@ -97,39 +143,48 @@ function doDeposit(message, tipper) {
   });
 }
 
-function doWithdraw(message, tipper, words, helpmsg) {
-  if (words.length < 4) {
+function doWithdraw(message, tipper, words, helpmsg, cmdOffset) {
+  cmdOffset = cmdOffset?cmdOffset:"+0";
+  if (words.length < eval("4"+cmdOffset)) {
     doHelp(message, helpmsg);
     return;
   }
 
-  var address = words[2],
-    amount = getValidatedAmount(words[3]);
+  var address = words[eval("2"+cmdOffset)],
+    amount = getValidatedAmount(words[eval("3"+cmdOffset)]);
 
   if (amount === null) {
     message.reply("I don't know how to withdraw that many Boxy coins...").then(message => message.delete(10000));
     return;
   }
 
-  boxy.sendFrom(tipper, address, Number(amount-0.00001), function(err, txId) {
-    if (err) {
-      message.reply(err.message).then(message => message.delete(10000));
+  boxy.getBalance(tipper, function(err, balance) {
+    if (amount < balance) {
+      boxy.sendFrom(tipper, address, Number(amount-0.00001), function(err, txId) {
+        if (err) {
+          message.reply(err.message).then(message => message.delete(10000));
+        } else {
+          message.reply('You withdrew ' + amount + ' BOXY to ' + address + '\n' + txLink(txId) + '\n');
+        }
+      });
     } else {
-      message.reply('You withdrew ' + amount + ' BOXY to ' + address + '\n' + txLink(txId) + '\n');
+      message.reply("Account has insufficient funds").then(message => message.delete(10000));
     }
   });
+
 }
 
-function doTip(bot, message, tipper, words, helpmsg) {
-  if (words.length < 3 || !words) {
+function doTip(bot, message, tipper, words, helpmsg, cmdOffset) {
+  cmdOffset = cmdOffset?cmdOffset:"+0";
+  if (words.length < eval("4"+cmdOffset) || !words) {
     doHelp(message, helpmsg);
     return;
   }
   var prv = false;
-  var amountOffset = 2;
-  if (words.length >= 4 && words[1] === 'private') {
+  var amountOffset = eval("3"+cmdOffset);
+  if (words.length >= eval("5"+cmdOffset) && words[1] === 'private') {
     prv = true;
-    amountOffset = 3;
+    amountOffset = eval("4"+cmdOffset);
   }
 
   let amount = getValidatedAmount(words[amountOffset]);
@@ -145,22 +200,29 @@ function doTip(bot, message, tipper, words, helpmsg) {
         return;
       }
   if (message.mentions.users.first().id) {
-    sendBOXY(bot, message, tipper, message.mentions.users.first().id.replace('!', ''), amount, prv);
+    boxy.getBalance(tipper, function(err, balance) {
+      if (amount < balance) {
+        sendBOXY(bot, message, tipper, message.mentions.users.first().id.replace('!', ''), amount, prv);
+      } else {
+        message.reply("Account has insufficient funds").then(message => message.delete(10000));
+      }
+    });
   } else {
     message.reply('Sorry, I could not find a user in your tip...').then(message => message.delete(10000));
   }
 }
 
-function doSoakRainDrizzle(bot, message, tipper, words, helpmsg, tipType) {
-  if (words.length < 3 || !words) {
-      doHelp(message, helpmsg);
-      return;
+function doSoakRainDrizzle(bot, message, tipper, words, helpmsg, tipType, cmdOffset) {
+  cmdOffset = cmdOffset?cmdOffset:"+0";
+  if (words.length < eval("3"+cmdOffset) || !words) {
+    doHelp(message, helpmsg);
+    return;
   }
   var prv = false;
-  var amountOffset = 2;
-  if (words.length >= 4 && words[1] === 'private') {
+  var amountOffset = eval("2"+cmdOffset);
+  if (words.length >= eval("4"+cmdOffset) && words[1] === 'private') {
       prv = true;
-      amountOffset = 3;
+      amountOffset = eval("3"+cmdOffset);
   }
 
   let amount = getValidatedAmount(words[amountOffset]);
@@ -231,14 +293,14 @@ function rain(amount, online, message, callback){
     if (!user.lastMessage) {
       const collector = new Discord.MessageCollector(message.channel, m => m.author.id === user.id, { time: 10000 });
       collector.on('collect', message => {
-        if(currentTime - message.createdTimestamp < 180000) {
+        if(message.channel.parentID === user.lastMessage.channel.parentID && currentTime - message.createdTimestamp < 180000) {
           onlineID.push(user.id);
           onlineUsername = onlineUsername + " <@" + user.id + ">"
         }
         collector.stop("Got my message");
       })
     } else {
-      if(currentTime - message.createdTimestamp < 180000) {
+      if(message.channel.parentID === user.lastMessage.channel.parentID && currentTime - message.createdTimestamp < 180000) {
         onlineID.push(user.id);
         onlineUsername = onlineUsername + " <@" + user.id + ">"
       }
@@ -256,13 +318,13 @@ function drizzle(amount, online, message, callback){
     if (!user.lastMessage) {
       const collector = new Discord.MessageCollector(message.channel, m => m.author.id === user.id, { time: 10000 });
       collector.on('collect', message => {
-        if(currentTime - message.createdTimestamp < 60000) {
+        if(message.channel.parentID === user.lastMessage.channel.parentID && currentTime - message.createdTimestamp < 60000) {
           onlineUsersList.push({id: user.id, timestamp: message.createdTimestamp});
         }
         collector.stop("Got my message");
       })
     } else {
-      if(currentTime - message.createdTimestamp < 60000) {
+      if(message.channel.parentID === user.lastMessage.channel.parentID && currentTime - message.createdTimestamp < 60000) {
         onlineUsersList.push({id: user.id, timestamp: user.lastMessage.createdTimestamp});
       }
     }
