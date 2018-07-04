@@ -3,7 +3,7 @@
   // Bot configuration
   "bot": {
       "token":"<DISCORDBOTTOKEN",
-      "prefix": "!",
+      "prefix": "$",
       "debug": true
   },
   "boxyd": {
