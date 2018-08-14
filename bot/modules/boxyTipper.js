@@ -91,8 +91,8 @@ exports.directCommands = {
         '    **$price** : get price of BOXY coin\n    **$block** : get current block height\n    **$supply** : get # of BOXY coins are in supply\n',
     channelwarning = 'Please use <#bot-spam> or DMs to talk to bots.';
     switch (subcommand) {
-      case 'help':
-        privateorSpamChannel(msg, channelwarning, doHelp, [helpmsg]);
+      case 'tip':
+        doTip(bot, msg, tipper, words, helpmsg, cmdOffset);
         break;
       case 'bal':
         doBalance(msg, tipper);
@@ -118,6 +118,9 @@ exports.directCommands = {
       case 'block':
         getBlock(bot, msg);
         break;
+      case 'avatar':
+        getavatar(bot, msg, words);
+        break;
       // case 'weight':
       //   getWeight(bot, msg);
       //   break;
@@ -125,7 +128,7 @@ exports.directCommands = {
         getSupply(bot, msg);
         break;
       default:
-        doTip(bot, msg, tipper, words, helpmsg, cmdOffset);
+        privateorSpamChannel(msg, channelwarning, doHelp, [helpmsg]);
     }
   }
 };
@@ -256,8 +259,14 @@ function doSoakRainDrizzle(bot, message, tipper, words, helpmsg, tipType, cmdOff
 
   boxy.getBalance(tipper, function(err, balance){
     if(amount < balance){
-      let members = bot.users;
-      let online = members.filter(m => m.presence.status === 'online' && m.bot === false && tipper !== m.id);
+      let serverid = message.channel.guild.id;
+      let members = bot.guilds.get(serverid).members;
+      let online = [];
+      members.filter(m => {
+        if(m.user.presence.status === 'online' && m.user.bot === false && tipper !== m.user.id){
+          online.push(m.user);
+        }
+      });
 
       if(tipType === "soak") {
         soak(amount, online, onlineUserResponse);
@@ -274,31 +283,42 @@ function doSoakRainDrizzle(bot, message, tipper, words, helpmsg, tipType, cmdOff
         if(!onlineID.length){
         message.reply(noUserMessage);
       } else {
+        let addresses = {}, i=0;
         onlineID.forEach(function(id){
           getAddress(id, function(err, address) {
             if (err) {
               message.reply(err.message).then(message => message.delete(10000));
             } else {
-              boxy.sendFrom(tipper, address, Number(shareAmount), 1, null, null, function (err, txId) {
-                if(err) console.log(err + " with address " + address);
-                else console.log(shareAmount + " tipped from " + tipper + " to " + address + " with txid: " + txId);
-              })
+              i++;
+              addresses[address] = shareAmount;
+              if(onlineID.length === i || i % 100 === 0){
+                  sendAll(tipper, addresses, tippedMessage, onlineID.length, i);
+                  addresses = {};
+              }
             }
           })
         });
-        message.channel.send(tippedMessage)
       }
+    }
+    function sendAll (tipper, data, tippedMessage, tl, ind){
+        boxy.sendMany(tipper, data, 2, 'Nemo From Example.com');
+        if(tl === ind){
+          sendDSRMessages(message, tippedMessage, 0xFAA61B, []);
+        }
     }
   });
 }
 
 function soak(amount, online, callback){
-  let onlineID = online.map(function (user) {
-      return user.id;
+  let onlineID = [];
+  let onlineUsername = "";
+  online.forEach(function (user) {
+      onlineID.push(user.id);
+      onlineUsername = onlineUsername + " <@" + user.id + ">"
   });
   callback(onlineID, onlineID.length + " users currently online. No BOXY is rained",
-      "@everyone :thunder_cloud_rain: BOXY Coins are falling from the sky!!! :thunder_cloud_rain: \n**" +
-      amount/onlineID.length + " BOXY** soaked " + onlineID.length + " Online Users! :rocket:");
+      ":thunder_cloud_rain: BOXY Coins are falling from the sky!!! :thunder_cloud_rain: \n**" +
+      amount/onlineID.length + " BOXY** soaked on " + onlineUsername + " :rocket:");
 }
 
 function rain(amount, online, message, callback){
@@ -417,6 +437,25 @@ function getSupply(bot, msg){
   });
 }
 
+function getavatar(bot, msg, words){
+  let desc;
+  if(words.length > 1 && msg.mentions.users){
+    for(var user of msg.mentions.users){
+      desc = "";
+      if(!user[1].avatarURL){
+        desc = user[1].username+"'s profile picture is not available. So **It's ME**"
+      }
+      sendEmbedNameAndPic(msg, user[1].username, 0x00FF00, user[1].avatarURL || msg.client.user.avatarURL, desc)
+    }
+  } else {
+    desc = "";
+    if(!msg.author.avatarURL){
+      desc = "Your profile picture is not available. So **It's ME**"
+    }
+    sendEmbedNameAndPic(msg, msg.author.username, 0x00FF00, msg.author.avatarURL || msg.client.user.avatarURL, desc)
+  }
+}
+
 function getDataFromAPI(url, sync, callback){
   let xmlHttp = new XMLHttpRequest();
 
@@ -446,7 +485,34 @@ function sendEmbedMessages(msg, description, color, fields) {
 
   msg.channel.send(embed)
 // color: 3447003, // blue
+}
 
+function sendDSRMessages(msg, description, color, fields) {
+  let embed = new Discord.RichEmbed()
+    .setColor(color)
+    .setDescription(description)
+    .setFooter("© Boxy Coin", msg.client.user.avatarURL)
+    // .setImage("http://i.imgur.com/yVpymuV.png")
+    .setTimestamp()
+  fields.forEach(function(f){
+    embed = embed.addField(f.name, f.value)
+  });
+
+  msg.channel.send(embed)
+// color: 3447003, // blue
+}
+
+function sendEmbedNameAndPic(msg, heading, color, url, description){
+    let embed = new Discord.RichEmbed()
+        .setTitle(heading)
+        .setColor(color)
+        .setFooter("© Boxy Coin", msg.client.user.avatarURL)
+        .setDescription(description)
+        .setImage(url)
+        .setTimestamp()
+        .setURL("https://boxycoin.live/");
+
+    msg.channel.send(embed)
 }
 
 function sendBOXY(bot, message, tipper, recipient, amount, privacyFlag) {
