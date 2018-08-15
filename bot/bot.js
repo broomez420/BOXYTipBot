@@ -76,10 +76,10 @@ bot.on('ready', function() {
         config.prefix +
         'tiphelp in Discord for a commands list.'
     );
-  bot.user.setActivity(config.prefix + 'Intialized!');
+  // bot.user.setActivity(config.prefix + 'Intialized!');
   var text = ['tiprvn', 'tipdoge', 'tiplbc', 'tipufo', 'tipproton', 'tippxc', 'tipftc', 'tiphelp'];
   var counter = 0;
-  setInterval(change, 10000);
+  // setInterval(change, 10000);
 
   function change() {
     bot.user.setActivity(config.prefix + text[counter]);

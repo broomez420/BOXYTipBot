@@ -148,7 +148,7 @@ function doHelp(message, helpmsg) {
 function doBalance(message, tipper) {
   boxy.getBalance(tipper, 1, function(err, balance) {
     if (err) {
-      message.reply('Error getting Boxy balance.').then(message => message.delete(10000));
+      message.reply('Error getting Boxy balance.').then(message => message.delete(5000));
     } else {
       message.reply('You have **' + balance + ' BOXY** :moneybag:');
     }
@@ -158,7 +158,7 @@ function doBalance(message, tipper) {
 function doDeposit(message, tipper) {
   getAddress(tipper, function(err, address) {
     if (err) {
-      message.reply('Error getting your Boxy deposit address.').then(message => message.delete(10000));
+      message.reply('Error getting your Boxy deposit address.').then(message => message.delete(5000));
     } else {
       message.reply('Your Boxy (BOXY) address is ' + address);
     }
@@ -176,7 +176,7 @@ function doWithdraw(message, tipper, words, helpmsg, cmdOffset) {
     amount = getValidatedAmount(words[eval("3"+cmdOffset)]);
 
   if (amount === null) {
-    message.reply("I don't know how to withdraw that many Boxy coins...").then(message => message.delete(10000));
+    message.reply("I don't know how to withdraw that many Boxy coins...").then(message => message.delete(5000));
     return;
   }
 
@@ -184,13 +184,13 @@ function doWithdraw(message, tipper, words, helpmsg, cmdOffset) {
     if (amount < balance) {
       boxy.sendFrom(tipper, address, Number(amount-0.00001), function(err, txId) {
         if (err) {
-          message.reply(err.message).then(message => message.delete(10000));
+          message.reply("Balance Error: " + err.message).then(message => message.delete(5000));
         } else {
           message.reply('You withdrew ' + amount + ' BOXY to ' + address + '\n' + txLink(txId) + '\n');
         }
       });
     } else {
-      message.reply("Account has insufficient funds").then(message => message.delete(10000));
+      message.reply("Account has insufficient funds").then(message => message.delete(5000));
     }
   });
 
@@ -212,13 +212,13 @@ function doTip(bot, message, tipper, words, helpmsg, cmdOffset) {
   let amount = getValidatedAmount(words[amountOffset]);
 
   if (amount === null) {
-    message.reply("I don't know how to tip that many Boxy coins...").then(message => message.delete(10000));
+    message.reply("I don't know how to tip that many Boxy coins...").then(message => message.delete(5000));
     return;
   }
   if (!message.mentions.users.first()){
        message
         .reply('Sorry, I could not find a user in your tip...')
-        .then(message => message.delete(10000));
+        .then(message => message.delete(5000));
         return;
       }
   if (message.mentions.users.first().id) {
@@ -226,11 +226,11 @@ function doTip(bot, message, tipper, words, helpmsg, cmdOffset) {
       if (amount < balance) {
         sendBOXY(bot, message, tipper, message.mentions.users.first().id.replace('!', ''), amount, prv);
       } else {
-        message.reply("Account has insufficient funds").then(message => message.delete(10000));
+        message.reply("Account has insufficient funds").then(message => message.delete(5000));
       }
     });
   } else {
-    message.reply('Sorry, I could not find a user in your tip...').then(message => message.delete(10000));
+    message.reply('Sorry, I could not find a user in your tip...').then(message => message.delete(5000));
   }
 }
 
@@ -250,10 +250,10 @@ function doSoakRainDrizzle(bot, message, tipper, words, helpmsg, tipType, cmdOff
   let amount = getValidatedAmount(words[amountOffset]);
 
   if (amount === null) {
-    message.reply("I don't know how to tip that many Boxy coins...").then(message => message.delete(10000));
+    message.reply("I don't know how to tip that many Boxy coins...").then(message => message.delete(5000));
     return;
   } else if (amount < 0.01){
-    message.reply("Atleast 0.01 BOXY is required to rain").then(message => message.delete(10000));
+    message.reply("Atleast 0.01 BOXY is required to rain").then(message => message.delete(5000));
     return;
   }
 
@@ -276,9 +276,9 @@ function doSoakRainDrizzle(bot, message, tipper, words, helpmsg, tipType, cmdOff
         drizzle(amount, online, message, onlineUserResponse);
       }
     } else {
-      message.reply("Account has insufficient funds").then(message => message.delete(10000));
+      message.reply("Account has insufficient funds").then(message => message.delete(5000));
     }
-    function onlineUserResponse(onlineID, noUserMessage, tippedMessage){
+    function onlineUserResponse(onlineID, noUserMessage, tippedMessage, setUsernames){
         let shareAmount = amount/onlineID.length;
         if(!onlineID.length){
         message.reply(noUserMessage);
@@ -287,12 +287,12 @@ function doSoakRainDrizzle(bot, message, tipper, words, helpmsg, tipType, cmdOff
         onlineID.forEach(function(id){
           getAddress(id, function(err, address) {
             if (err) {
-              message.reply(err.message).then(message => message.delete(10000));
+              message.reply("GET address Error: " +err.message).then(message => message.delete(5000));
             } else {
               i++;
               addresses[address] = shareAmount;
               if(onlineID.length === i || i % 100 === 0){
-                  sendAll(tipper, addresses, tippedMessage, onlineID.length, i);
+                  sendAll(tipper, addresses, tippedMessage, onlineID.length, i, setUsernames);
                   addresses = {};
               }
             }
@@ -300,10 +300,19 @@ function doSoakRainDrizzle(bot, message, tipper, words, helpmsg, tipType, cmdOff
         });
       }
     }
-    function sendAll (tipper, data, tippedMessage, tl, ind){
-        boxy.sendMany(tipper, data, 2, 'Nemo From Example.com');
+    function sendAll (tipper, data, tippedMessage, tl, ind, setUsernames){
+        boxy.sendMany(tipper, data, 2, 'Nemo From Example.com', function(res, tr){
+            console.log(res);
+            console.log(tr);
+        });
         if(tl === ind){
-          sendDSRMessages(message, tippedMessage, 0xFAA61B, []);
+          if(setUsernames && setUsernames.length){
+            setUsernames.forEach(function(sun){
+              sendDSRMessages(message, tippedMessage + " " + sun, 0xFAA61B, []);
+            })
+          } else {
+            sendDSRMessages(message, tippedMessage, 0xFAA61B, []);
+          }
         }
     }
   });
@@ -312,13 +321,21 @@ function doSoakRainDrizzle(bot, message, tipper, words, helpmsg, tipType, cmdOff
 function soak(amount, online, callback){
   let onlineID = [];
   let onlineUsername = "";
+  let i=0;
+  let setUsernames = [];
   online.forEach(function (user) {
       onlineID.push(user.id);
-      onlineUsername = onlineUsername + " <@" + user.id + ">"
+      onlineUsername = onlineUsername + " <@" + user.id + ">";
+      i++;
+      if(i === 50){
+        setUsernames.push(onlineUsername);
+        onlineUsername = "";
+      }
   });
+  setUsernames.push(onlineUsername);
   callback(onlineID, onlineID.length + " users currently online. No BOXY is rained",
       ":thunder_cloud_rain: BOXY Coins are falling from the sky!!! :thunder_cloud_rain: \n**" +
-      amount/onlineID.length + " BOXY** soaked on " + onlineUsername + " :rocket:");
+      amount/onlineID.length + " BOXY** soaked on ", setUsernames);
 }
 
 function rain(amount, online, message, callback){
@@ -343,7 +360,8 @@ function rain(amount, online, message, callback){
       }
     }
   });
-  callback(onlineID, "No new messages, since I woke up", ":cloud_rain: **" + amount/onlineID.length + " BOXY** rained down on " + onlineUsername + " :rocket:");
+  callback(onlineID, "No new messages, since I woke up", ":cloud_rain: BOXY Coins are raining from the sky!!! :cloud_rain: \n" +
+      "**" + amount/onlineID.length + " BOXY** rained down on " + onlineUsername + " :rocket:");
 }
 
 function drizzle(amount, online, message, callback){
@@ -373,7 +391,8 @@ function drizzle(amount, online, message, callback){
     onlineUsername = onlineUsername + " <@" + user.id + ">";
     return user.id;
   });
-  callback(onlineID,"No new messages, since I woke up", ":white_sun_rain_cloud: **" + amount/onlineID.length + " BOXY** rained down on " + onlineUsername + " :rocket:");
+  callback(onlineID,"No new messages, since I woke up", ":white_sun_rain_cloud: BOXY Coins are drizzling from the sky!!! :white_sun_rain_cloud: \n" +
+      "**" + amount/onlineID.length + " BOXY** rained down on " + onlineUsername + " :rocket:");
 }
 
 function getPrice(bot, msg){
@@ -518,11 +537,11 @@ function sendEmbedNameAndPic(msg, heading, color, url, description){
 function sendBOXY(bot, message, tipper, recipient, amount, privacyFlag) {
   getAddress(recipient.toString(), function(err, address) {
     if (err) {
-      message.reply(err.message).then(message => message.delete(10000));
+      message.reply("GET address Error: " +err.message).then(message => message.delete(5000));
     } else {
       boxy.sendFrom(tipper, address, Number(amount), 1, null, null, function(err, txId) {
         if (err) {
-          message.reply(err.message).then(message => message.delete(10000));
+          message.reply("Send from Error: " +err.message).then(message => message.delete(5000));
         } else {
           if (privacyFlag) {
             let userProfile = message.guild.members.find('id', recipient);
