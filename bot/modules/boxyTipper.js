@@ -306,13 +306,18 @@ function doSoakRainDrizzle(bot, message, tipper, words, helpmsg, tipType, cmdOff
             console.log(tr);
         });
         if(tl === ind){
-          if(setUsernames && setUsernames.length){
-            setUsernames.forEach(function(sun){
-              sendDSRMessages(message, tippedMessage + " " + sun, 0xFAA61B, []);
-            })
-          } else {
-            sendDSRMessages(message, tippedMessage, 0xFAA61B, []);
+          message.channel.send(tippedMessage);
+          if(setUsernames && setUsernames.length > 1){
+              for (let j = 1; j < setUsernames.length; j++) {
+                  message.channel.send(setUsernames[j]);
+              }
+            // setUsernames.forEach(function(sun){
+              // sendDSRMessages(message, tippedMessage + " " + sun, 0xFAA61B, []);
+            // })
           }
+          // else {
+            // sendDSRMessages(message, tippedMessage, 0xFAA61B, []);
+          // }
         }
     }
   });
@@ -335,7 +340,7 @@ function soak(amount, online, callback){
   setUsernames.push(onlineUsername);
   callback(onlineID, onlineID.length + " users currently online. No BOXY is rained",
       ":thunder_cloud_rain: BOXY Coins are falling from the sky!!! :thunder_cloud_rain: \n**" +
-      amount/onlineID.length + " BOXY** soaked on ", setUsernames);
+      amount/onlineID.length + " BOXY** soaked on " + setUsernames[0], setUsernames);
 }
 
 function rain(amount, online, message, callback){
