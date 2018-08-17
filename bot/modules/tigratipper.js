@@ -21,7 +21,7 @@ let Regex = require('regex'),
   config = require('config'),
   spamchannels = config.get('moderation').botspamchannels;
 let walletConfig = config.get('TigraCoind');
-const boxy = new bitcoin.Client(walletConfig); //leave as = new bitcoin.Client(walletConfig)
+const tigra = new bitcoin.Client(walletConfig); //leave as = new bitcoin.Client(walletConfig)
 
 exports.commands = ['directCommands', 'tipTigra'];
 exports.tipTigra = {
