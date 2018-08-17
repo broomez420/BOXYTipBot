@@ -220,7 +220,7 @@ function doTip(bot, message, tipper, words, helpmsg, cmdOffset) {
   if (message.mentions.users.first().id) {
     boxy.getBalance(tipper, function(err, balance) {
       if (amount < balance) {
-        sendBOXY(bot, message, tipper, message.mentions.users.first().id.replace('!', ''), amount, prv);
+        sendTIGC(bot, message, tipper, message.mentions.users.first().id.replace('!', ''), amount, prv);
       } else {
         message.reply("Account has insufficient funds").then(message => message.delete(5000));
       }
@@ -612,7 +612,7 @@ function inPrivateorSpamChannel(msg) {
 
 function isSpam(msg) {
   return spamchannels.includes(msg.channel.id);
-};
+}
 
 function compareDesc(a,b) {
     if (a.timestamp < b.timestamp)
