@@ -21,14 +21,13 @@ let Regex = require('regex'),
   config = require('config'),
   spamchannels = config.get('moderation').botspamchannels;
 let walletConfig = config.get('TigraCoind');
-const tigra = new bitcoin.Client(walletConfig); //leave as = new bitcoin.Client(walletConfig)
+const boxy = new bitcoin.Client(walletConfig); //leave as = new bitcoin.Client(walletConfig)
 
 exports.commands = ['directCommands', 'tipTigra'];
 exports.tipTigra = {
   usage: '<subcommand>',
   description:
-    '__**BOXY Coin Tipper**__\n    **$bal** : get your balance\n    **$deposit** : get address for your deposits\n    **$withdraw <ADDRESS> <AMOUNT>** : withdraw coins to specified address\n    **$tip <@user> <amount>** :mention a user with @ and then the amount to tip them\n    **$tip private <user> <amount>** : put private before Mentioning a user to tip them privately.\n    **$soak <AMOUNT>** : gives coins to all Active users.\n.   **$rain <AMOUNT>** : gives coins to users who have sent a message recently.\n    **$drizzle <AMOUNT>** : gives coins to the last 5 active users.\n' +
-      '    **$price** : get price of BOXY coin\n    **$block** : get current block height\n    **$supply** : get # of BOXY coins are in supply\n',
+    '__**TigraCoin Tipper**__\n    **$bal** : get your balance\n    **$deposit** : get address for your deposits\n    **$withdraw <ADDRESS> <AMOUNT>** : withdraw coins to specified address\n    **$tip <@user> <amount>** :mention a user with @ and then the amount to tip them\n    **$tip private <user> <amount>** : put private before Mentioning a user to tip them privately.\n    **$soak <AMOUNT>** : gives coins to all Active users.\n.   **$rain <AMOUNT>** : gives coins to users who have sent a message recently.\n    **$drizzle <AMOUNT>** : gives coins to the last 5 active users.\n',
   process: async function(bot, msg, suffix) {
     let tipper = msg.author.id.replace('!', ''),
       words = msg.content
@@ -39,8 +38,7 @@ exports.tipTigra = {
         }),
       subcommand = words.length >= 2 ? words[1] : 'help',
       helpmsg =
-        '__**BOXY Coin Tipper**__\n    **$bal** : get your balance\n    **$deposit** : get address for your deposits\n    **$withdraw <ADDRESS> <AMOUNT>** : withdraw coins to specified address\n    **$tip <@user> <amount>** :mention a user with @ and then the amount to tip them\n    **$tip private <user> <amount>** : put private before Mentioning a user to tip them privately.\n    **$soak <AMOUNT>** : gives coins to all Active users.\n.   **$rain <AMOUNT>** : gives coins to users who have sent a message recently.\n    **$drizzle <AMOUNT>** : gives coins to the last 5 active users.\n' +
-          '    **$price** : get price of BOXY coin\n    **$block** : get current block height\n    **$supply** : get # of BOXY coins are in supply\n',
+        '__**TigraCoin Tipper**__\n    **$bal** : get your balance\n    **$deposit** : get address for your deposits\n    **$withdraw <ADDRESS> <AMOUNT>** : withdraw coins to specified address\n    **$tip <@user> <amount>** :mention a user with @ and then the amount to tip them\n    **$tip private <user> <amount>** : put private before Mentioning a user to tip them privately.\n    **$soak <AMOUNT>** : gives coins to all Active users.\n.   **$rain <AMOUNT>** : gives coins to users who have sent a message recently.\n    **$drizzle <AMOUNT>** : gives coins to the last 5 active users.\n',
       channelwarning = 'Please use <#bot-spam> or DMs to talk to bots.';
     switch (subcommand) {
       case 'help':
@@ -73,8 +71,7 @@ exports.tipTigra = {
 exports.directCommands = {
   usage: '<subcommand>',
   description:
-    '__**BOXY Coin Tipper**__\n    **$bal** : get your balance\n    **$deposit** : get address for your deposits\n    **$withdraw <ADDRESS> <AMOUNT>** : withdraw coins to specified address\n    **$tip <@user> <amount>** :mention a user with @ and then the amount to tip them\n    **$tip private <user> <amount>** : put private before Mentioning a user to tip them privately.\n    **$soak <AMOUNT>** : gives coins to all Active users.\n.   **$rain <AMOUNT>** : gives coins to users who have sent a message recently.\n    **$drizzle <AMOUNT>** : gives coins to the last 5 active users.\n' +
-      '    **$price** : get price of BOXY coin\n    **$block** : get current block height\n    **$supply** : get # of BOXY coins are in supply\n',
+    '__**TigraCoin Tipper**__\n    **$bal** : get your balance\n    **$deposit** : get address for your deposits\n    **$withdraw <ADDRESS> <AMOUNT>** : withdraw coins to specified address\n    **$tip <@user> <amount>** :mention a user with @ and then the amount to tip them\n    **$tip private <user> <amount>** : put private before Mentioning a user to tip them privately.\n    **$soak <AMOUNT>** : gives coins to all Active users.\n.   **$rain <AMOUNT>** : gives coins to users who have sent a message recently.\n    **$drizzle <AMOUNT>** : gives coins to the last 5 active users.\n',
   process: async function(bot, msg, suffix) {
     let tipper = msg.author.id.replace('$', ''),
     words = msg.content
@@ -87,8 +84,7 @@ exports.directCommands = {
     subcommand = words.length >= 1 ? words[0] : 'help',
     cmdOffset = "-1",
     helpmsg =
-      '__**BOXY Coin Tipper**__\n    **$bal** : get your balance\n    **$deposit** : get address for your deposits\n    **$withdraw <ADDRESS> <AMOUNT>** : withdraw coins to specified address\n    **$tip <@user> <amount>** :mention a user with @ and then the amount to tip them\n    **$tip private <user> <amount>** : put private before Mentioning a user to tip them privately.\n    **$soak <AMOUNT>** : gives coins to all Active users.\n.   **$rain <AMOUNT>** : gives coins to users who have sent a message recently.\n    **$drizzle <AMOUNT>** : gives coins to the last 5 active users.\n' +
-        '    **$price** : get price of BOXY coin\n    **$block** : get current block height\n    **$supply** : get # of BOXY coins are in supply\n',
+      '__**TigraCoin Tipper**__\n    **$bal** : get your balance\n    **$deposit** : get address for your deposits\n    **$withdraw <ADDRESS> <AMOUNT>** : withdraw coins to specified address\n    **$tip <@user> <amount>** :mention a user with @ and then the amount to tip them\n    **$tip private <user> <amount>** : put private before Mentioning a user to tip them privately.\n    **$soak <AMOUNT>** : gives coins to all Active users.\n.   **$rain <AMOUNT>** : gives coins to users who have sent a message recently.\n    **$drizzle <AMOUNT>** : gives coins to the last 5 active users.\n',
     channelwarning = 'Please use <#bot-spam> or DMs to talk to bots.';
     switch (subcommand) {
       case 'tip':
@@ -148,9 +144,9 @@ function doHelp(message, helpmsg) {
 function doBalance(message, tipper) {
   boxy.getBalance(tipper, 1, function(err, balance) {
     if (err) {
-      message.reply('Error getting Boxy balance.').then(message => message.delete(5000));
+      message.reply('Error getting TigraCoin balance.').then(message => message.delete(5000));
     } else {
-      message.reply('You have **' + balance + ' BOXY** :moneybag:');
+      message.reply('You have **' + balance + ' TigraCoin** :moneybag:');
     }
   });
 }
@@ -158,9 +154,9 @@ function doBalance(message, tipper) {
 function doDeposit(message, tipper) {
   getAddress(tipper, function(err, address) {
     if (err) {
-      message.reply('Error getting your Boxy deposit address.').then(message => message.delete(5000));
+      message.reply('Error getting your TigraCoin deposit address.').then(message => message.delete(5000));
     } else {
-      message.reply('Your Boxy (BOXY) address is ' + address);
+      message.reply('Your TigraCoin (TIGC) address is ' + address);
     }
   });
 }
@@ -176,7 +172,7 @@ function doWithdraw(message, tipper, words, helpmsg, cmdOffset) {
     amount = getValidatedAmount(words[eval("3"+cmdOffset)]);
 
   if (amount === null) {
-    message.reply("I don't know how to withdraw that many Boxy coins...").then(message => message.delete(5000));
+    message.reply("I don't know how to withdraw that many TigraCoins...").then(message => message.delete(5000));
     return;
   }
 
@@ -186,7 +182,7 @@ function doWithdraw(message, tipper, words, helpmsg, cmdOffset) {
         if (err) {
           message.reply("Balance Error: " + err.message).then(message => message.delete(5000));
         } else {
-          message.reply('You withdrew ' + amount + ' BOXY to ' + address + '\n' + txLink(txId) + '\n');
+          message.reply('You withdrew ' + amount + ' TIGC to ' + address + '\n' + txLink(txId) + '\n');
         }
       });
     } else {
@@ -212,7 +208,7 @@ function doTip(bot, message, tipper, words, helpmsg, cmdOffset) {
   let amount = getValidatedAmount(words[amountOffset]);
 
   if (amount === null) {
-    message.reply("I don't know how to tip that many Boxy coins...").then(message => message.delete(5000));
+    message.reply("I don't know how to tip that many  TigraCoins...").then(message => message.delete(5000));
     return;
   }
   if (!message.mentions.users.first()){
@@ -250,10 +246,10 @@ function doSoakRainDrizzle(bot, message, tipper, words, helpmsg, tipType, cmdOff
   let amount = getValidatedAmount(words[amountOffset]);
 
   if (amount === null) {
-    message.reply("I don't know how to tip that many Boxy coins...").then(message => message.delete(5000));
+    message.reply("I don't know how to tip that many Tigracoins...").then(message => message.delete(5000));
     return;
   } else if (amount < 0.01){
-    message.reply("Atleast 0.01 BOXY is required to rain").then(message => message.delete(5000));
+    message.reply("Atleast 0.01 TIGC is required to rain").then(message => message.delete(5000));
     return;
   }
 
@@ -338,9 +334,9 @@ function soak(amount, online, callback){
       }
   });
   setUsernames.push(onlineUsername);
-  callback(onlineID, onlineID.length + " users currently online. No BOXY is rained",
-      ":thunder_cloud_rain: BOXY Coins are falling from the sky!!! :thunder_cloud_rain: \n**" +
-      amount/onlineID.length + " BOXY** soaked on " + setUsernames[0], setUsernames);
+  callback(onlineID, onlineID.length + " users currently online. No TigraCoin is rained",
+      ":thunder_cloud_rain: TigraCoins are falling from the sky!!! :thunder_cloud_rain: \n**" +
+      amount/onlineID.length + " TIGC** soaked on " + setUsernames[0], setUsernames);
 }
 
 function rain(amount, online, message, callback){
@@ -365,8 +361,8 @@ function rain(amount, online, message, callback){
       }
     }
   });
-  callback(onlineID, "No new messages, since I woke up", ":cloud_rain: BOXY Coins are raining from the sky!!! :cloud_rain: \n" +
-      "**" + amount/onlineID.length + " BOXY** rained down on " + onlineUsername + " :rocket:");
+  callback(onlineID, "No new messages, since I woke up", ":cloud_rain: TigraCoins are raining from the sky!!! :cloud_rain: \n" +
+      "**" + amount/onlineID.length + " TIGC** rained down on " + onlineUsername + " :rocket:");
 }
 
 function drizzle(amount, online, message, callback){
@@ -396,8 +392,8 @@ function drizzle(amount, online, message, callback){
     onlineUsername = onlineUsername + " <@" + user.id + ">";
     return user.id;
   });
-  callback(onlineID,"No new messages, since I woke up", ":white_sun_rain_cloud: BOXY Coins are drizzling from the sky!!! :white_sun_rain_cloud: \n" +
-      "**" + amount/onlineID.length + " BOXY** rained down on " + onlineUsername + " :rocket:");
+  callback(onlineID,"No new messages, since I woke up", ":white_sun_rain_cloud: TigraCoins are drizzling from the sky!!! :white_sun_rain_cloud: \n" +
+      "**" + amount/onlineID.length + " TIGC** rained down on " + onlineUsername + " :rocket:");
 }
 
 /*
@@ -416,7 +412,6 @@ function getPrice(bot, msg){
     }
   });
 }
-
 function getBlock(bot, msg){
   getDataFromAPI("https://boxy.blockxplorer.info/api/getblockcount", true, function(result){
     if (result !== "undefined") {
@@ -431,7 +426,6 @@ function getBlock(bot, msg){
     }
   });
 }
-
 function getWeight(bot, msg){
   getDataFromAPI("https://boxy.blockxplorer.info/api/getdifficulty", true, function(result){
     if (result !== "undefined") {
@@ -446,7 +440,6 @@ function getWeight(bot, msg){
     }
   });
 }
-
 function getSupply(bot, msg){
   getDataFromAPI("https://boxy.blockxplorer.info/ext/getmoneysupply", true, function(result){
     if (result !== "undefined") {
@@ -461,7 +454,6 @@ function getSupply(bot, msg){
     }
   });
 }
-
 function getavatar(bot, msg, words){
   let desc;
   if(words.length > 1 && msg.mentions.users){
@@ -480,10 +472,8 @@ function getavatar(bot, msg, words){
     sendEmbedNameAndPic(msg, msg.author.username, 0x00FF00, msg.author.avatarURL || msg.client.user.avatarURL, desc)
   }
 }
-
 function getDataFromAPI(url, sync, callback){
   let xmlHttp = new XMLHttpRequest();
-
   xmlHttp.onreadystatechange = function() {
     if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
       callback(xmlHttp.responseText);
@@ -555,20 +545,20 @@ function sendTIGC(bot, message, tipper, recipient, amount, privacyFlag) {
             var iimessage =
               ' You got privately tipped ' +
               amount +
-              ' BOXY\n' +
+              ' TIGC\n' +
               txLink(txId) +
               '\n' +
-              'DM me `!help` for TigcTipper instructions.';
+              'DM me `$help` for TigcTipper instructions.';
             userProfile.user.send(iimessage);
             var imessage =
               ' You privately tipped ' +
               userProfile.user.username +
               ' ' +
               amount +
-              ' BOXY\n' +
+              ' TIGC\n' +
               txLink(txId) +
               '\n' +
-              'DM me `!help` for TigcTipper instructions.';
+              'DM me `$help` for TigcTipper instructions.';
             message.author.send(imessage);
 
             if (
@@ -582,10 +572,10 @@ function sendTIGC(bot, message, tipper, recipient, amount, privacyFlag) {
               recipient +
               '> ' +
               amount +
-              ' BOXY\n' +
+              ' TIGC\n' +
               txLink(txId) +
               '\n' +
-              'DM me `!help` for boxyTipper instructions.';
+              'DM me `$help` for TTipper instructions.';
               message.reply(iiimessage);
           }
         }
@@ -634,12 +624,12 @@ function compareDesc(a,b) {
 
 function getValidatedAmount(amount) {
   amount = amount.trim();
-  if (amount.toLowerCase().endsWith('boxy')) {
+  if (amount.toLowerCase().endsWith('tigc')) {
     amount = amount.substring(0, amount.length - 3);
   }
   return amount.match(/^[0-9]+(\.[0-9]+)?$/) ? amount : null;
 }
 
 function txLink(txId) {
-  return 'https://boxy.blockxplorer.info/tx/' + txId;
+  return 'http://45.76.202.188:3003/tx/' + txId;
 }
