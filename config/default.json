@@ -7,9 +7,9 @@
       "debug": true
   },
   "cryptofightclubd": {
-      "port": "42374",
-      "user": "<rpc_cryptofightclub>",
-      "pass": "<4e6265da644c6c7c034315958>"
+      "port": "1234",
+      "user": "<RPCUSERNAME>",
+      "pass": "<RPCPASSWORD>"
   },
   "moderation":{
   "pm2Name": "TipBot",
