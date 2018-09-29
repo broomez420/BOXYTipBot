@@ -1,0 +1,25 @@
+
+{
+  // Bot configuration
+  "bot": {
+      "token":"NDk1MTg0MTI1NDkwMTAyMjgy.DpDPhQ.qc73dzsLJ50afZzigqPwgtTE-kQ",
+      "prefix": """,
+      "debug": true
+  },
+  "cryptofightclubd": {
+      "port": "42374",
+      "user": "cryptofightadm1n",
+      "pass": "FdhsgdDsdghg123432!"
+  },
+  "moderation":{
+  "pm2Name": "TipBot",
+   // Roles that have access to all commands.
+  "perms": ["CFCC Staff","CFCC Tip Bot"],
+  // Bot Devs!
+  "CFCC Staff",
+  // Channel to log the bots moderation..
+  "logchannel": "475646936335122442",
+  //channel that the tip message will reply in if Multi or Role tip is used.
+  "botspamchannels": ["475646936335122442", "457636377513689101"]
+  }
+}
