@@ -12,7 +12,7 @@
       "pass": "rpcpassword !"
   },
   "moderation":{
-  "pm2Name": "TipBot",
+  "pm2Name": "CFCCTipBot",
    // Roles that have access to all commands.
   "perms": ["CFCC Staff","CFCC Tip Bot"],
   // Bot Devs!
