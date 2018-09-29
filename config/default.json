@@ -2,14 +2,14 @@
 {
   // Bot configuration
   "bot": {
-      "token":"NDk1MTg0MTI1NDkwMTAyMjgy.DpDPhQ.qc73dzsLJ50afZzigqPwgtTE-kQ",
+      "token":"Discord token here",
       "prefix": """,
       "debug": true
   },
   "cryptofightclubd": {
-      "port": "42374",
-      "user": "cryptofightadm1n",
-      "pass": "FdhsgdDsdghg123432!"
+      "port": "1234",
+      "user": "rpcuser ",
+      "pass": "rpcpassword !"
   },
   "moderation":{
   "pm2Name": "TipBot",
